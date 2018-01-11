@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/searchText"
+        android:background="@drawable/border"
+        android:hint="Wpisz nazwę przywoływacza"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"/>
+
+    <Button
+        android:id="@+id/searchButton"
+        android:text="Szukaj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/searchText"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:id="@+id/server"
+        android:text="Serwer: EUNE"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchButton"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:id="@+id/accountIdTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/server"/>
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/accountIdTest">
+
+    </ListView>
+
+</RelativeLayout>
