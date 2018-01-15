@@ -44,6 +44,10 @@ public class Match {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Match(int cI, String r, long t) {
         this.championId = cI;
+        /*switch (r) {
+            case "BOTTOM":
+                this.role = "BOT";
+        }*/
         this.role = r;
         this.date = getDate(t);
     }
