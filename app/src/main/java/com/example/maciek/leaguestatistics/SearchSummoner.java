@@ -56,9 +56,10 @@ public class SearchSummoner extends AppCompatActivity {
     }
 
     private class API extends AsyncTask<String, Void, String> {
-        private final String APIkey = "RGAPI-eaf25ff0-bc1e-4116-ac6f-a05cc0f12403";
+        private final int accountId = 31084320;
+        private final String APIkey = "RGAPI-e3d99364-3b2a-4f4a-be0f-ab3aafbb4177";
         private String accountUrl = "https://eun1.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=" + APIkey;
-        private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%s/recent?api_key=" + APIkey;
+        private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%d/recent?api_key=" + APIkey;
         private ProgressDialog progressDialog = new ProgressDialog(SearchSummoner.this);
 
         public String getAccountUrl(String summonerName) {
@@ -66,7 +67,7 @@ public class SearchSummoner extends AppCompatActivity {
             return fullAccountUrl;
         }
 
-        public String getMatchesUrl(String accountId) {
+        public String getMatchesUrl(int accountId) {
             String fullMatchesUrl = String.format(matchesUrl, accountId);
             return fullMatchesUrl;
         }
@@ -92,7 +93,7 @@ public class SearchSummoner extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressDialog.setMessage("Downloading current rotation...");
+            progressDialog.setMessage("Poczekaj na pobranie statystyk...");
             progressDialog.show();
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
@@ -107,7 +108,8 @@ public class SearchSummoner extends AppCompatActivity {
             StringBuilder stringBuilder = new StringBuilder();
             URL url = null;
             try {
-                url = new URL(getAccountUrl(params[0]));
+                //url = new URL(getAccountUrl(params[0]));
+                url = new URL(getMatchesUrl(accountId));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -134,6 +136,7 @@ public class SearchSummoner extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            /*
             JSONObject jsonObject = null;
             Integer accountId = null;
             try {
@@ -145,6 +148,13 @@ public class SearchSummoner extends AppCompatActivity {
             }
             accountIdTest = (TextView) findViewById(R.id.accountIdTest);
             accountIdTest.setText(Integer.toString(accountId));
+            */
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             progressDialog.dismiss();
         }
 

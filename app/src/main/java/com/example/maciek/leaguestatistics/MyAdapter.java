@@ -6,35 +6,28 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Maciek on 2018-01-11.
  */
 
-public class MyAdapter extends ArrayAdapter<String> {
+public class MyAdapter extends ArrayAdapter<Match> {
     private Context context;
     private int layoutResourceId;
-    private List<String> types;
-    private List<String> times;
-    private List<String> champImages;
-    private List<String> champNames;
-    private List<String> roles;
-    private List<String> firstSpells;
-    private List<String> secondSpells;
-    private List<String> KDAs;
+    private List<Match> matchList;
 
-    public MyAdapter(Context c, int lRI, List<String> ty, List<String> ti, List<String> cI, List<String> cN, List<String> r, List<String> fS, List<String> sS, List<String> k) {
+    public MyAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Match> objects) {
+        super(context, resource, objects);
+    }
+
+
+
+    /*public MyAdapter(Context c, int lRI, List<Match> mL) {
         this.context = c;
         this.layoutResourceId = lRI;
-        this.types = ty;
-        this.times = ti;
-        this.champImages = cI;
-        this.champNames = cN;
-        this.roles = r;
-        this.firstSpells = fS;
-        this.secondSpells = sS;
-        this.KDAs = k;
+        this.matchList = mL;
         //super(context, layoutResourceId, ty, ti, cI, cN, r, fS, sS, k);
-    }
+    }*/
 }
