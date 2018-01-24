@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +27,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+import java.util.List;
+>>>>>>> d290120363ec1a505046aaa063921d7cb31fb996
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -37,9 +43,14 @@ public class SearchSummoner extends AppCompatActivity {
     private EditText searchText;
     private TextView accountIdTest;
     private ListView listView;
+<<<<<<< HEAD
     private int id;
     private int status = 0;
     private int amountMatches = 0;
+=======
+    private ArrayList<Match> matches = new ArrayList<Match>();
+    private MyAdapter myAdapter;
+>>>>>>> d290120363ec1a505046aaa063921d7cb31fb996
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +60,7 @@ public class SearchSummoner extends AppCompatActivity {
         searchButton = (Button) findViewById(R.id.searchButton);
         searchText = (EditText) findViewById(R.id.searchText);
         listView = (ListView) findViewById(R.id.listview);
+
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +74,11 @@ public class SearchSummoner extends AppCompatActivity {
 
     private class API extends AsyncTask<String, Void, String> {
         private final int accountId = 31084320;
+<<<<<<< HEAD
         private final String APIkey = "RGAPI-a7328b83-555c-47e9-9a69-0a87c5804064";
+=======
+        private final String APIkey = "RGAPI-24434203-a0b0-44ab-850c-9b1d90305e4c";
+>>>>>>> d290120363ec1a505046aaa063921d7cb31fb996
         private String accountUrl = "https://eun1.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=" + APIkey;
         private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%d/recent?api_key=" + APIkey;
         private String matchUrl = "https://eun1.api.riotgames.com/lol/match/v3/matches/%d?api_key=" + APIkey;
@@ -160,6 +176,7 @@ public class SearchSummoner extends AppCompatActivity {
             return stringBuilder.toString();
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String result) {
             /*
@@ -178,6 +195,7 @@ public class SearchSummoner extends AppCompatActivity {
             int gameId = 0;
             try {
                 JSONObject jsonObject = new JSONObject(result);
+<<<<<<< HEAD
                 if (status == 3) {
 
                 }
@@ -197,6 +215,15 @@ public class SearchSummoner extends AppCompatActivity {
                 }
 
 
+=======
+                JSONArray jsonArray = jsonObject.getJSONArray("matches");
+                JSONObject singleMatchJSON = jsonArray.getJSONObject(0);
+                Match singleMatch = new Match(singleMatchJSON.getInt("champion"), singleMatchJSON.getString("role"), singleMatchJSON.getLong("date"));
+                matches.add(singleMatch);
+                myAdapter = new MyAdapter(getApplicationContext(), matches);
+                listView = (ListView) findViewById(R.id.listview);
+                listView.setAdapter(myAdapter);
+>>>>>>> d290120363ec1a505046aaa063921d7cb31fb996
             } catch (JSONException e) {
                 e.printStackTrace();
             }
