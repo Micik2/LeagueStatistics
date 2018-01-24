@@ -7,7 +7,7 @@ import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Time;
 
 /**
@@ -15,12 +15,24 @@ import java.sql.Time;
  */
 
 public class Match {
+    private int[] kills = new int[10];
+    private int[] deaths = new int[10];
+    private int[] assists = new int[10];
+    private int goldEarned;
+    private int totalMinionsKilled;
+    private int gameDuration;
+    private String gameResult;
+    private String[] summonersNames = new String[10];
     //private String gameType;
     //private Time gameDuration;
     private int championId;
-    private String role;
+    private String lane;
     //private long timestamp;
-    private String date;
+    //private String date;
+    //private champpionImage;
+    private String gameMode;
+    private int mapId;
+    private String highestAchievedSeasonTier;
     //private int spell1Id;
     //private int spell2Id;
     //private int kills;
@@ -46,16 +58,21 @@ public class Match {
         this.championId = cI;
         this.role = r;
         this.date = getDate(t);
+        //if (gR < 300) then gameResult = "remake"
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public String getDate(long t) {
         Calendar calendar = Calendar.getInstance();
-        TimeZone timeZone = TimeZone.getDefault();
-        calendar.setTimeInMillis(t * 1000);
-        calendar.add(Calendar.MILLISECOND, timeZone.getOffset(calendar.getTimeInMillis()));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Date date = (Date) calendar.getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = calendar.getTime();
         return simpleDateFormat.format(date);
     }
+
+    public String getChampionName(int cI) {
+        String championName;
+
+        return championName;
+    }
+
 }

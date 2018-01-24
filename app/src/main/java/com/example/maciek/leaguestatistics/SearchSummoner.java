@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -35,6 +37,9 @@ public class SearchSummoner extends AppCompatActivity {
     private EditText searchText;
     private TextView accountIdTest;
     private ListView listView;
+    private int id;
+    private int status = 0;
+    private int amountMatches = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +62,12 @@ public class SearchSummoner extends AppCompatActivity {
 
     private class API extends AsyncTask<String, Void, String> {
         private final int accountId = 31084320;
-        private final String APIkey = "RGAPI-e3d99364-3b2a-4f4a-be0f-ab3aafbb4177";
+        private final String APIkey = "RGAPI-a7328b83-555c-47e9-9a69-0a87c5804064";
         private String accountUrl = "https://eun1.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=" + APIkey;
         private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%d/recent?api_key=" + APIkey;
+        private String matchUrl = "https://eun1.api.riotgames.com/lol/match/v3/matches/%d?api_key=" + APIkey;
         private ProgressDialog progressDialog = new ProgressDialog(SearchSummoner.this);
+        private ArrayList<Match> matches = new ArrayList<Match>();
 
         public String getAccountUrl(String summonerName) {
             String fullAccountUrl = String.format(accountUrl, summonerName);
@@ -70,6 +77,11 @@ public class SearchSummoner extends AppCompatActivity {
         public String getMatchesUrl(int accountId) {
             String fullMatchesUrl = String.format(matchesUrl, accountId);
             return fullMatchesUrl;
+        }
+
+        public String getMatchUrl(long gameId) {
+            String fullMatchUrl = String.format(matchUrl, gameId);
+            return fullMatchUrl;
         }
 
         /*public String getAccountId(String name) throws IOException, JSONException {
@@ -108,8 +120,22 @@ public class SearchSummoner extends AppCompatActivity {
             StringBuilder stringBuilder = new StringBuilder();
             URL url = null;
             try {
-                //url = new URL(getAccountUrl(params[0]));
-                url = new URL(getMatchesUrl(accountId));
+                if (status == 2) {
+                    if (amountMatches < 10) {
+                        url = new URL(getMatchUrl(Long.parseLong(params[0])));
+                        amountMatches += 1;
+                        status = 3;
+                    }
+                }
+                else if (status == 1) {
+                    url = new URL(getMatchesUrl(Integer.parseInt(params[0])));
+                    status = 2;
+                }
+                else if (status == 0) {
+                    url = new URL(getAccountUrl(params[0]));
+                    status = 1;
+                }
+                //url = new URL(getMatchesUrl(accountId));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -149,13 +175,41 @@ public class SearchSummoner extends AppCompatActivity {
             accountIdTest = (TextView) findViewById(R.id.accountIdTest);
             accountIdTest.setText(Integer.toString(accountId));
             */
+            int gameId = 0;
             try {
                 JSONObject jsonObject = new JSONObject(result);
+                if (status == 3) {
+
+                }
+                //JSONObject jsonObject = new JSONObject(result);
+                else if (status == 2) {
+                    JSONArray jsonArray = jsonObject.getJSONArray("matches");
+                    for (int i = 0; i < 10; i++) {
+                        JSONObject singleMatch = jsonArray.getJSONObject(i);
+                        String lane = singleMatch.getString("lane");
+                        gameId = singleMatch.getInt("gameId");
+                        int champion = singleMatch.getInt("champion");
+                    }
+
+                }
+                else if (status == 1) {
+                    id = jsonObject.getInt("accountId");
+                }
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            progressDialog.dismiss();
+            if (status == 3)
+                progressDialog.dismiss();
+            else if (status == 2) {
+                new API().execute(new String[]{Integer.toString(gameId)});
+                //if (amountMatches == 10)
+                //    status = 3;
+            }
+            else if (status == 1) {
+                new API().execute(new String[]{Integer.toString(id)});
+            }
         }
 
 
