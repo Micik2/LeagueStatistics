@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,7 +50,7 @@ public class SearchSummoner extends AppCompatActivity {
     private ListView listView;
     private int id;
     //privateint  status = -1;
-    private String status = "-1";
+    private String status = "0";
     private int amountMatches = 0;
     private ArrayList<Match> matches = new ArrayList<Match>();
     private MyAdapter myAdapter;
@@ -65,6 +66,7 @@ public class SearchSummoner extends AppCompatActivity {
     private int[] gameId = new int[10];
     //private int gameId;
     private int[] championIds = new int[10];
+    private String[] championNames = new String[10];
     private String[] imagesNames = new String[10];
     private String fullImageUrl;
     private Bitmap[] bitmaps = new Bitmap[10];
@@ -121,8 +123,8 @@ public class SearchSummoner extends AppCompatActivity {
     }
 
     private class API extends AsyncTask<String, Void, String> {
-        private final int accountId = 31084320;
-        private final String APIkey = "RGAPI-a7328b83-555c-47e9-9a69-0a87c5804064";
+        //private final int accountId = 31084320;
+        private final String APIkey = "RGAPI-3d1bf7aa-6d0d-446f-9e06-4093f0bf5300";
         private String accountUrl = "https://eun1.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=" + APIkey;
         private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%d/recent?api_key=" + APIkey;
         private String matchUrl = "https://eun1.api.riotgames.com/lol/match/v3/matches/%d?api_key=" + APIkey;
@@ -183,8 +185,13 @@ public class SearchSummoner extends AppCompatActivity {
             URL url = null;
             status = params[1];
             try {
-                if (status.equals("2")) {
-                    Log.d(status, "JESTEM TUTAJ");
+                if (status.equals("3")) {
+                    //Log.d(status, "JESTEM TUTAJ");
+                    url = new URL(championsUrl);
+                    status = "4";
+                }
+                else if (status.equals("2")) {
+                    //Log.d(status, "JESTEM TUTAJ");
                     //if (amountMatches < 11) {
                         url = new URL(getMatchUrl(Long.parseLong(params[0])));
                         //amountMatches += 1;
@@ -195,19 +202,14 @@ public class SearchSummoner extends AppCompatActivity {
                     status = "3";
                 }
                 else if (status.equals("1")) {
-                    Log.d(status, "JESTEM TUTAJ");
+                    //Log.d(status, "JESTEM TUTAJ");
                     url = new URL(getMatchesUrl(Integer.parseInt(params[0])));
                     status = "2";
                 }
                 else if (status.equals("0")) {
-                    Log.d(status, "JESTEM TUTAJ");
+                    //Log.d(status, "JESTEM TUTAJ");
                     url = new URL(getAccountUrl(params[0]));
                     status = "1";
-                }
-                else if (status.equals("-1")) {
-                    Log.d(status, "JESTEM TUTAJ");
-                    url = new URL(championsUrl);
-                    status = "0";
                 }
                 //url = new URL(getMatchesUrl(accountId));
             } catch (MalformedURLException e) {
@@ -255,7 +257,23 @@ public class SearchSummoner extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(result);
 
-                if (status.equals("3")) {
+
+                if (status.equals("4")) {
+                    //Log.d(status, "JESTEM TUTAJ");
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    JSONObject datas = jsonObject.getJSONObject("data");
+                    for (int n = 0; n < 10; n++) {
+                        JSONObject data = datas.getJSONObject(String.valueOf(championIds[n]));
+                        JSONObject images = data.getJSONObject("image");
+                        imagesNames[n] = images.getString("full");
+                        URL fullImageUrl = new URL(ddragonImageUrl + imagesNames[n]);
+                        bitmaps[n] = BitmapFactory.decodeStream(fullImageUrl.openConnection().getInputStream());
+                        championNames[n] = data.getString("name");
+                    }
+
+                }
+                else if (status.equals("3")) {
                     //Log.d(status, "JESTEM TUTAJ");
                     JSONArray jsonArray = jsonObject.getJSONArray("participantIdentities");
                     int partId = -1;
@@ -315,18 +333,6 @@ public class SearchSummoner extends AppCompatActivity {
                     //Log.d(status, "JESTEM TUTAJ");
                     id = jsonObject.getInt("accountId");
                 }
-                else if (status.equals("0")) {
-                    //Log.d(status, "JESTEM TUTAJ");
-                    JSONObject datas = jsonObject.getJSONObject("data");
-                    for (int n = 0; n < 10; n++) {
-                        JSONObject data = datas.getJSONObject(String.valueOf(championIds[n]));
-                        JSONObject images = data.getJSONObject("image");
-                        imagesNames[n] = images.getString("full");
-                        URL fullImageUrl = new URL(ddragonImageUrl + imagesNames[n]);
-                        bitmaps[n] = BitmapFactory.decodeStream(fullImageUrl.openConnection().getInputStream());
-                    }
-
-                }
 
 
                 //JSONArray jsonArray = jsonObject.getJSONArray("matches");
@@ -343,16 +349,29 @@ public class SearchSummoner extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (status.equals("3")) {
-                //Log.d(status, "JESTEM TUTAJ");
-                //for (int m = 0; m < 10; m++) {
-                    matches.add(new Match(gameId[0], queueId, mapId, gameDuration, win, goldEarned, totalMinionsKilled, summonersNames, lanes, championIds, kills, deaths, assists, highestAchievedSeasonTiers, bitmaps, mainParticipantId));
+
+            if (status.equals("4")) {
+                matches.add(new Match(gameId[0], queueId, mapId, gameDuration, win, goldEarned, totalMinionsKilled, summonersNames, lanes, championIds, championNames, kills, deaths, assists, highestAchievedSeasonTiers, bitmaps, mainParticipantId));
                 //}
                 myAdapter = new MyAdapter(getApplicationContext(), matches);
                 listView = (ListView) findViewById(R.id.listview);
                 listView.setAdapter(myAdapter);
+                this.cancel(true);
+                //this.cancel(true);
+
+                //new API().execute(new String[]{summonerName, status});
+            }
+            else if (status.equals("3")) {
+                //Log.d(status, "JESTEM TUTAJ");
+                //for (int m = 0; m < 10; m++) {
+                    /*matches.add(new Match(gameId[0], queueId, mapId, gameDuration, win, goldEarned, totalMinionsKilled, summonersNames, lanes, championIds, championNames, kills, deaths, assists, highestAchievedSeasonTiers, bitmaps, mainParticipantId));
+                //}
+                myAdapter = new MyAdapter(getApplicationContext(), matches);
+                listView = (ListView) findViewById(R.id.listview);
+                listView.setAdapter(myAdapter);*/
                 //progressDialog.dismiss();
                 this.cancel(true);
+                new API().execute(new String[]{summonerName, status});
             }
             else if (status.equals("2")) {
                 //Log.d(status, "JESTEM TUTAJ");
@@ -365,10 +384,6 @@ public class SearchSummoner extends AppCompatActivity {
                 //Log.d(status, "JESTEM TUTAJ");
                 this.cancel(true);
                 new API().execute(new String[]{Integer.toString(id), status});
-            }
-            else if (status.equals("0")) {
-                this.cancel(true);
-                new API().execute(new String[]{summonerName, status});
             }
         }
 

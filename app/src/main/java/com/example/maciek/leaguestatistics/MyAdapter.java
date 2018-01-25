@@ -60,12 +60,12 @@ public class MyAdapter extends ArrayAdapter<Match> {
 
         int mainParticipantId = match.getMainParticipantId();
         mainChampionImage.setImageBitmap(match.getBitmaps()[mainParticipantId - 1]);
-        mainChampionName.setText(String.valueOf(match.getChampionIds()[mainParticipantId - 1]));
+        mainChampionName.setText(match.getChampionNames()[mainParticipantId - 1]);
         kills.setText(String.valueOf(match.getKills()[mainParticipantId - 1]));
         deaths.setText(String.valueOf(match.getDeaths()[mainParticipantId - 1]));
         assists.setText(String.valueOf(match.getAssists()[mainParticipantId - 1]));
-        gold.setText(String.valueOf(match.getGoldEarned()));
-        minions.setText(String.valueOf(match.getTotalMinionsKilled()));
+        gold.setText("Gold: " + String.valueOf(match.getGoldEarned()));
+        minions.setText("Minions: " + String.valueOf(match.getTotalMinionsKilled()));
         result.setText(match.getGameResult());
 
         //champion = convertView.findViewById(R.id.main_champion_name);

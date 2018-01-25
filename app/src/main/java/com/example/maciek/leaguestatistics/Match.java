@@ -32,6 +32,7 @@ public class Match {
     private String[] summonersNames = new String[10];
     private String[] lanes = new String[10];
     private int[] championIds = new int[10];
+    private String[] championNames = new String[10];
     private int[] kills = new int[10];
     private int[] deaths = new int[10];
     private int[] assists = new int[10];
@@ -39,7 +40,7 @@ public class Match {
     private Bitmap[] bitmaps = new Bitmap[10];
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public Match(int gI, int qI, /*String gM,*/ int mI, int gD, boolean gR, int gE, int tMK, String[] sN, String[] l, int[] cI, int[] k, int[] d, int[] a, String[] hAST, Bitmap[] b, int mPI) {
+    public Match(int gI, int qI, /*String gM,*/ int mI, int gD, boolean gR, int gE, int tMK, String[] sN, String[] l, int[] cI, String[] cN, int[] k, int[] d, int[] a, String[] hAST, Bitmap[] b, int mPI) {
         this.gameId = gI;
         //this.gameMode = gM;
         this.queueName = getQueueName(qI);
@@ -51,6 +52,7 @@ public class Match {
         this.summonersNames = sN;
         this.lanes = l;
         this.championIds = cI;
+        this.championNames = cN;
         this.kills = k;
         this.deaths = d;
         this.assists = a;
@@ -105,6 +107,10 @@ public class Match {
 
     public int[] getChampionIds() {
         return championIds;
+    }
+
+    public String[] getChampionNames() {
+        return championNames;
     }
 
     public int[] getKills() {
@@ -185,28 +191,28 @@ public class Match {
         for (int i = 0; i < 10; i++) {
             switch (hAST[i]) {
                 case "BRONZE":
-                    hAST[i] = "bronze";
+                    hAST[i] = "bronze.png";
                     break;
                 case "SILVER":
-                    hAST[i] = "silver";
+                    hAST[i] = "silver.png";
                     break;
                 case "GOLD":
-                    hAST[i] = "gold";
+                    hAST[i] = "gold.png";
                     break;
                 case "PLATINUM":
-                    hAST[i] = "platinum";
+                    hAST[i] = "platinum.png";
                     break;
                 case "DIAMOND":
-                    hAST[i] = "diamond";
+                    hAST[i] = "diamond.png";
                     break;
                 case "MASTER":
-                    hAST[i] = "master";
+                    hAST[i] = "master.png";
                     break;
                 case "CHALLENGER":
-                    hAST[i] = "challenger";
+                    hAST[i] = "challenger.png";
                     break;
                 default:
-                    hAST[i] = "provisional";
+                    hAST[i] = "provisional.png";
                     break;
             }
         }
