@@ -5,6 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +48,8 @@ public class SearchSummoner extends AppCompatActivity {
     private TextView accountIdTest;
     private ListView listView;
     private int id;
-    private int status = -1;
+    //privateint  status = -1;
+    private String status = "-1";
     private int amountMatches = 0;
     private ArrayList<Match> matches = new ArrayList<Match>();
     private MyAdapter myAdapter;
@@ -55,12 +62,19 @@ public class SearchSummoner extends AppCompatActivity {
     private String[] lanes = new String[10];
     //private String lane;
     private int mapId;
-    //private int[] gameId = new int[10];
-    private int gameId;
+    private int[] gameId = new int[10];
+    //private int gameId;
     private int[] championIds = new int[10];
     private String[] imagesNames = new String[10];
     private String fullImageUrl;
     private Bitmap[] bitmaps = new Bitmap[10];
+    private int queueId;
+    private boolean win;
+    private int goldEarned = -1;
+    private int totalMinionsKilled = -1;
+    private int gameDuration = -1;
+    private int mainParticipantId;
+    //private API api = new API();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +90,34 @@ public class SearchSummoner extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             summonerName = searchText.getText().toString();
-            new API().execute(new String[]{summonerName});
+            //new API().execute(new String[]{summonerName});
+                new API().execute(new String[]{summonerName, status});
             //accountIdTest.setText(api.getAccountId(summonerName));
             }
         });
+    }
+    public static class ImageHelper {
+        public Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+                    .getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+
+            final int color = 0xff424242;
+            final Paint paint = new Paint();
+            final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            final RectF rectF = new RectF(rect);
+            final float roundPx = pixels;
+
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(color);
+            canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(bitmap, rect, rect, paint);
+
+            return output;
+        }
     }
 
     private class API extends AsyncTask<String, Void, String> {
@@ -90,7 +128,7 @@ public class SearchSummoner extends AppCompatActivity {
         private String matchUrl = "https://eun1.api.riotgames.com/lol/match/v3/matches/%d?api_key=" + APIkey;
         private String championsUrl = "https://eun1.api.riotgames.com/lol/static-data/v3/champions?locale=en_US&tags=image&dataById=true&api_key=" + APIkey;
         private String ddragonImageUrl = "https://ddragon.leagueoflegends.com/cdn/8.2.1/img/champion/";
-        private ProgressDialog progressDialog = new ProgressDialog(SearchSummoner.this);
+        //private ProgressDialog progressDialog = new ProgressDialog(SearchSummoner.this);
         private ArrayList<Match> matches = new ArrayList<Match>();
 
         public String getAccountUrl(String sN) {
@@ -128,7 +166,7 @@ public class SearchSummoner extends AppCompatActivity {
         }*/
 
         @Override
-        protected void onPreExecute() {
+        protected void onPreExecute() {/*
             progressDialog.setMessage("Poczekaj na pobranie statystyk...");
             progressDialog.show();
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -136,34 +174,40 @@ public class SearchSummoner extends AppCompatActivity {
                 public void onCancel(DialogInterface dialog) {
                     API.this.cancel(true);
                 }
-            });
+            });*/
         }
 
         @Override
         protected String doInBackground(String... params) {
             StringBuilder stringBuilder = new StringBuilder();
             URL url = null;
+            status = params[1];
             try {
-                if (status == 2) {
-                    if (amountMatches < 11) {
+                if (status.equals("2")) {
+                    Log.d(status, "JESTEM TUTAJ");
+                    //if (amountMatches < 11) {
                         url = new URL(getMatchUrl(Long.parseLong(params[0])));
                         //amountMatches += 1;
                         //status = 3;
-                    }
-                    else
-                        status = 4;
+                    //}
+                    //else
+                    //    status = 4;
+                    status = "3";
                 }
-                else if (status == 1) {
+                else if (status.equals("1")) {
+                    Log.d(status, "JESTEM TUTAJ");
                     url = new URL(getMatchesUrl(Integer.parseInt(params[0])));
-                    status = 2;
+                    status = "2";
                 }
-                else if (status == 0) {
+                else if (status.equals("0")) {
+                    Log.d(status, "JESTEM TUTAJ");
                     url = new URL(getAccountUrl(params[0]));
-                    status = 1;
+                    status = "1";
                 }
-                else if (status == -1) {
+                else if (status.equals("-1")) {
+                    Log.d(status, "JESTEM TUTAJ");
                     url = new URL(championsUrl);
-                    status = 0;
+                    status = "0";
                 }
                 //url = new URL(getMatchesUrl(accountId));
             } catch (MalformedURLException e) {
@@ -172,6 +216,7 @@ public class SearchSummoner extends AppCompatActivity {
             HttpsURLConnection httpsURLConnection = null;
             InputStream inputStream = null;
             try {
+                Log.d(status, "NULL POINTER I TAK DALEJ");
                 httpsURLConnection = (HttpsURLConnection) url.openConnection();
                 inputStream = new BufferedInputStream(httpsURLConnection.getInputStream());
             } catch (IOException e) {
@@ -210,62 +255,68 @@ public class SearchSummoner extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(result);
 
-                if (status == 3) {
+                if (status.equals("3")) {
+                    //Log.d(status, "JESTEM TUTAJ");
                     JSONArray jsonArray = jsonObject.getJSONArray("participantIdentities");
+                    int partId = -1;
                     for (int j = 0; j < 10; j++) {
                         JSONObject participantId = jsonArray.getJSONObject(j);
                         JSONObject player = participantId.getJSONObject("player");
                         summonersNames[j] = player.getString("summonerName");
                         // numer porządkowy osoby (od 1 do 10)
-                        int partId = -1;
                         if (summonersNames[j].equals(summonerName))
                             partId = participantId.getInt("participantId");
-                        JSONArray participants = jsonObject.getJSONArray("participants");
-                        //int kills = -1;
-                        //int deaths = -1;
-                        //int assists = -1;
-                        boolean win;
-                        int goldEarned = -1;
-                        int totalMinionsKilled = -1;
-                        int gameDuration = -1;
-                        //String highestAchievedSeasonTier = "";
-                        for (int k = 0; k < 10; k++) {
-                            JSONObject object = participants.getJSONObject(k);
-                            JSONObject stats = object.getJSONObject("stats");
-                            kills[k] = stats.getInt("kills");
-                            deaths[k] = stats.getInt("deaths");
-                            assists[k] = stats.getInt("assists");
-                            int pI = object.getInt("participantId");
-                            highestAchievedSeasonTiers[k] = object.getString("highestAchievedSeasonTier");
-                            championIds[k] = object.getInt("championId");
-                            JSONObject timeline = object.getJSONObject("timeline");
-                            lanes[k] = timeline.getString("lane");
-                            if (partId == pI) {
-                                win = stats.getBoolean("win");
-                                goldEarned = stats.getInt("goldEarned");
-                                totalMinionsKilled = stats.getInt("totalMinionsKilled");
-                            }
-                        }
-                        // CLASSIC lub RANKED
-                        String gameMode = jsonObject.getString("gameMode");
-                        // id mapy
-                        mapId = jsonObject.getInt("mapId");
-                        gameDuration = jsonObject.getInt("gameDuration");
                     }
+                    JSONArray participants = jsonObject.getJSONArray("participants");
+                    //int kills = -1;
+                    //int deaths = -1;
+                    //int assists = -1;
+                    //boolean win;
+                    //int goldEarned = -1;
+                    //int totalMinionsKilled = -1;
+                    //int gameDuration = -1;
+                    //String highestAchievedSeasonTier = "";
+                    for (int k = 0; k < 10; k++) {
+                        JSONObject object = participants.getJSONObject(k);
+                        JSONObject stats = object.getJSONObject("stats");
+                        kills[k] = stats.getInt("kills");
+                        deaths[k] = stats.getInt("deaths");
+                        assists[k] = stats.getInt("assists");
+                        int pI = object.getInt("participantId");
+                        highestAchievedSeasonTiers[k] = object.getString("highestAchievedSeasonTier");
+                        championIds[k] = object.getInt("championId");
+                        JSONObject timeline = object.getJSONObject("timeline");
+                        lanes[k] = timeline.getString("lane");
+                        if (partId == pI) {
+                            win = stats.getBoolean("win");
+                            goldEarned = stats.getInt("goldEarned");
+                            totalMinionsKilled = stats.getInt("totalMinionsKilled");
+                            mainParticipantId = partId;
+                        }
+                    }
+                    // CLASSIC lub RANKED
+                    String gameMode = jsonObject.getString("gameMode");
+                    // id mapy
+                    mapId = jsonObject.getInt("mapId");
+                    gameDuration = jsonObject.getInt("gameDuration");
+                    queueId = jsonObject.getInt("queueId");
                 }
                 //JSONObject jsonObject = new JSONObject(result);
-                else if (status == 2) {
+                else if (status.equals("2")) {
+                    //Log.d(status, "JESTEM TUTAJ");
                     JSONArray jsonArray = jsonObject.getJSONArray("matches");
                     for (int i = 0; i < 10; i++) {
                         JSONObject singleMatch = jsonArray.getJSONObject(i);
-                        gameId = singleMatch.getInt("gameId");
+                        gameId[i] = singleMatch.getInt("gameId");
                     }
 
                 }
-                else if (status == 1) {
+                else if (status.equals("1")) {
+                    //Log.d(status, "JESTEM TUTAJ");
                     id = jsonObject.getInt("accountId");
                 }
-                else if (status == 0) {
+                else if (status.equals("0")) {
+                    //Log.d(status, "JESTEM TUTAJ");
                     JSONObject datas = jsonObject.getJSONObject("data");
                     for (int n = 0; n < 10; n++) {
                         JSONObject data = datas.getJSONObject(String.valueOf(championIds[n]));
@@ -292,19 +343,32 @@ public class SearchSummoner extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (status == 3) {
-                for (int m = 0; m < 10; m++) {
-                    matches.add(new Match())
-                }
-                progressDialog.dismiss();
+            if (status.equals("3")) {
+                //Log.d(status, "JESTEM TUTAJ");
+                //for (int m = 0; m < 10; m++) {
+                    matches.add(new Match(gameId[0], queueId, mapId, gameDuration, win, goldEarned, totalMinionsKilled, summonersNames, lanes, championIds, kills, deaths, assists, highestAchievedSeasonTiers, bitmaps, mainParticipantId));
+                //}
+                myAdapter = new MyAdapter(getApplicationContext(), matches);
+                listView = (ListView) findViewById(R.id.listview);
+                listView.setAdapter(myAdapter);
+                //progressDialog.dismiss();
+                this.cancel(true);
             }
-            else if (status == 2) {
-                new API().execute(new String[]{Integer.toString(gameId)});
+            else if (status.equals("2")) {
+                //Log.d(status, "JESTEM TUTAJ");
+                this.cancel(true);
+                new API().execute(new String[]{Integer.toString(gameId[0]), status});
                 //if (amountMatches == 10)
                 //    status = 3;
             }
-            else if (status == 1) {
-                new API().execute(new String[]{Integer.toString(id)});
+            else if (status.equals("1")) {
+                //Log.d(status, "JESTEM TUTAJ");
+                this.cancel(true);
+                new API().execute(new String[]{Integer.toString(id), status});
+            }
+            else if (status.equals("0")) {
+                this.cancel(true);
+                new API().execute(new String[]{summonerName, status});
             }
         }
 

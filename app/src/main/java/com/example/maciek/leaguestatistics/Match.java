@@ -23,6 +23,7 @@ public class Match {
     //private int gameDuration;
     private String gameTime;
 
+    private int mainParticipantId;
     //private boolean win;
     private String gameResult;
     private int goldEarned;
@@ -38,7 +39,7 @@ public class Match {
     private Bitmap[] bitmaps = new Bitmap[10];
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public Match(int gI, int qI, /*String gM,*/ int mI, int gD, boolean gR, int gE, int tMK, String[] sN, String[] l, int[] cI, int[] k, int[] d, int[] a, String[] hAST, Bitmap[] b) {
+    public Match(int gI, int qI, /*String gM,*/ int mI, int gD, boolean gR, int gE, int tMK, String[] sN, String[] l, int[] cI, int[] k, int[] d, int[] a, String[] hAST, Bitmap[] b, int mPI) {
         this.gameId = gI;
         //this.gameMode = gM;
         this.queueName = getQueueName(qI);
@@ -53,8 +54,9 @@ public class Match {
         this.kills = k;
         this.deaths = d;
         this.assists = a;
-        this.highestAchievedSeasonTiers = hAST;
+        this.highestAchievedSeasonTiers = getDivisionsImages(hAST);
         this.bitmaps = b;
+        this.mainParticipantId = mPI;
         //this.championId = cI;
         /*switch (r) {
             case "BOTTOM":
@@ -65,8 +67,72 @@ public class Match {
         //if (gR < 300) then gameResult = "remake"
     }
 
+    public int getGameId() {
+        return gameId;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public String getGameTime() {
+        return gameTime;
+    }
+
+    public String getGameResult() {
+        return gameResult;
+    }
+
+    public int getGoldEarned() {
+        return goldEarned;
+    }
+
+    public int getTotalMinionsKilled() {
+        return totalMinionsKilled;
+    }
+
+    public String[] getSummonersNames() {
+        return summonersNames;
+    }
+
+    public String[] getLanes() {
+        return lanes;
+    }
+
+    public int[] getChampionIds() {
+        return championIds;
+    }
+
+    public int[] getKills() {
+        return kills;
+    }
+
+    public int[] getDeaths() {
+        return deaths;
+    }
+
+    public int[] getAssists() {
+        return assists;
+    }
+
+    public String[] getHighestAchievedSeasonTiers() {
+        return highestAchievedSeasonTiers;
+    }
+
+    public Bitmap[] getBitmaps() {
+        return bitmaps;
+    }
+
+    public int getMainParticipantId() {
+        return mainParticipantId;
+    }
+
     public String getQueueName(int qI) {
-        switch(qI) {
+        switch (qI) {
             case 400:
                 return "Klasyczna draft";
             case 420:
@@ -87,7 +153,7 @@ public class Match {
     }
 
     public String getMapName(int mI) {
-        switch(mI) {
+        switch (mI) {
             case 3:
                 return "The Proving Grounds";
             case 10:
@@ -114,13 +180,45 @@ public class Match {
             return "WYGRANA";
         return "PRZEGRANA";
     }
+
+    public String[] getDivisionsImages(String[] hAST) {
+        for (int i = 0; i < 10; i++) {
+            switch (hAST[i]) {
+                case "BRONZE":
+                    hAST[i] = "bronze";
+                    break;
+                case "SILVER":
+                    hAST[i] = "silver";
+                    break;
+                case "GOLD":
+                    hAST[i] = "gold";
+                    break;
+                case "PLATINUM":
+                    hAST[i] = "platinum";
+                    break;
+                case "DIAMOND":
+                    hAST[i] = "diamond";
+                    break;
+                case "MASTER":
+                    hAST[i] = "master";
+                    break;
+                case "CHALLENGER":
+                    hAST[i] = "challenger";
+                    break;
+                default:
+                    hAST[i] = "provisional";
+                    break;
+            }
+        }
+        return hAST;
+    }
+
     //private String gameType;
     //private Time gameDuration;
 
     //private long timestamp;
     //private String date;
     //private champpionImage;
-
 
 
     //private int spell1Id;
