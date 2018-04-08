@@ -44,9 +44,15 @@ public class MyAdapter extends ArrayAdapter<Match> {
     public View getView(int position, View convertView, ViewGroup parent) {
         //Match match = getItem(position);
         match = getItem(position);
+        String wynik = match.getGameResult();
 
-        if (convertView == null)
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_match_win, parent, false);
+        if (convertView == null) {
+            if (wynik.equals("WYGRANA"))
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_match_win, parent, false);
+            else if (wynik.equals("PRZEGRANA"))
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_match_loss, parent, false);
+            else if (wynik.equals("REMAKE"))
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_match_remake, parent, false);}
 
         mainChampionImage = convertView.findViewById(R.id.main_champion_image);
         mainChampionName = convertView.findViewById(R.id.main_champion_name);
@@ -64,6 +70,7 @@ public class MyAdapter extends ArrayAdapter<Match> {
         kills.setText(String.valueOf(match.getKills()[mainParticipantId - 1]));
         deaths.setText(String.valueOf(match.getDeaths()[mainParticipantId - 1]));
         assists.setText(String.valueOf(match.getAssists()[mainParticipantId - 1]));
+        time.setText("Time: " + match.getGameTime());
         gold.setText("Gold: " + String.valueOf(match.getGoldEarned()));
         minions.setText("Minions: " + String.valueOf(match.getTotalMinionsKilled()));
         result.setText(match.getGameResult());

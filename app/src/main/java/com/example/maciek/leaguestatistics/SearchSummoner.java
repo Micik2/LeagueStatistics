@@ -123,8 +123,8 @@ public class SearchSummoner extends AppCompatActivity {
     }
 
     private class API extends AsyncTask<String, Void, String> {
-        //private final int accountId = 31084320;
-        private final String APIkey = "RGAPI-3d1bf7aa-6d0d-446f-9e06-4093f0bf5300";
+        //private final int accountId = 12345678;
+        private final String APIkey = "";
         private String accountUrl = "https://eun1.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=" + APIkey;
         private String matchesUrl = "https://eun1.api.riotgames.com/lol/match/v3/matchlists/by-account/%d/recent?api_key=" + APIkey;
         private String matchUrl = "https://eun1.api.riotgames.com/lol/match/v3/matches/%d?api_key=" + APIkey;
@@ -174,7 +174,7 @@ public class SearchSummoner extends AppCompatActivity {
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    API.this.cancel(true);
+                    .this.cancel(true);
                 }
             });*/
         }
